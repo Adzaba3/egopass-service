@@ -120,3 +120,129 @@ Pour les détails sur les API disponibles, consultez la documentation Swagger di
 
 
 
+
+
+
+
+
+# API REST 
+
+Cette documentation décrit les endpoints REST disponibles dans l'application eGoPass. L'API est organisée autour de deux contrôleurs principaux : `AuthController`,`userController` et `EGoPassController`.
+
+## Base URL
+
+```
+https://localhost/api/v1
+```
+
+## Authentification
+
+L'API utilise des jetons JWT (JSON Web Token) pour authentifier les requêtes. Les tokens sont obtenus via les endpoints `/auth/login` et `/auth/register`.
+
+### Endpoints d'authentification
+
+#### Inscription d'un utilisateur
+
+```
+POST /auth/register
+```
+
+Permet d'inscrire un nouvel utilisateur et retourne un JWT.
+
+
+
+#### Authentification d'un utilisateur
+
+```
+POST /auth/login
+```
+
+Vérifie les identifiants et retourne un token JWT avec les informations de l'utilisateur.
+
+**Corps de la requête**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Codes de réponse**
+- `200 OK`: Authentification réussie
+- `400 Bad Request`: Requête invalide (ex: données manquantes)
+- `401 Unauthorized`: Identifiants incorrects
+
+## Gestion des eGoPass
+
+### Endpoints eGoPass
+
+#### Initier un eGoPass
+
+```
+POST /passes/initiate/{id}
+```
+
+Crée une réservation pour un eGoPass et initie le processus de paiement.
+
+
+
+**Réponse**
+```json
+{
+  "reservationId": "long",
+  "message": "Réservation créée avec succès. Veuillez procéder au paiement.",
+  "expiresIn": 3600,
+  "transactionReference": "string",
+  "redirectUrl": "string"
+}
+```
+
+
+#### Callback de paiement
+
+```
+POST /passes/payment/callback
+```
+
+Endpoint pour recevoir les notifications de la passerelle de paiement.
+
+**Corps de la requête**
+```json
+{
+  "transactionReference": "string", // résultant de l'appel api précédent
+  "reservationId": "long", 
+  "status": "PENDING",
+  "additionalData": {
+    "paymentMethod": "CREDIT_CARD",
+    "currency": "USD",
+    "amount": "50.00"
+  }
+}
+```
+
+
+#### Récupérer un eGoPass
+
+```
+GET /passes/{id}
+```
+
+Récupère les informations d'un eGoPass par son identifiant.
+
+
+#### Télécharger un eGoPass
+
+```
+GET /passes/{id}/download
+```
+
+Génère et télécharge le PDF d'un eGoPass.
+
+**Paramètres**
+- `id`: ID du eGoPass (path parameter)
+
+**Réponse**
+- Fichier PDF avec Content-Type `application/pdf`
+- Nom du fichier: `egopass-{id}.pdf`
+
+

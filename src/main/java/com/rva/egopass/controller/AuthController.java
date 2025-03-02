@@ -89,7 +89,7 @@ public class AuthController {
 
         // Liens vers d'autres ressources après authentification
         Map<String, String> links = new HashMap<>();
-        links.put("products", "/api/v1/passes");
+        links.put("egopass", "/api/v1/passes");
 
         // Construction de la réponse
         APIResponse<LoginResponse> response = new APIResponse<>(
